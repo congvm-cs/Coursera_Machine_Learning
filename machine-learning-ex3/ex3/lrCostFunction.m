@@ -35,16 +35,14 @@ grad = zeros(size(theta));
 %           temp(1) = 0;   % because we don't add anything for j = 0  
 %           grad = grad + YOUR_CODE_HERE (using the temp variable)
 %
+    h = sigmoid(X * theta); % hypothesis
+    theta(1) = 0; % we don't add anything for j = 0
+    reg = lambda/(2.*m) * sum(theta.^2); % regularied function
+    J = (1.0/m) * (-y'*log(h) - (1 - y')*log(1 - h)) + reg; % cost function
 
-
-
-
-
-
-
-
-
-
+    grad = (1.0/m)*(X'*(h - y)) + (lambda/m)*theta; % derivative of 
+                                                    % regularized logistic 
+                                                    % regression cost
 % =============================================================
 
 grad = grad(:);

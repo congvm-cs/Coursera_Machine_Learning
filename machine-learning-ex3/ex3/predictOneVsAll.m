@@ -30,11 +30,8 @@ X = [ones(m, 1) X];
 %       for each row.
 %       
 
-
-
-
-
-
+propability = sigmoid(X * all_theta');
+[~, p] = max(propability, [], 2);
 
 % =========================================================================
 
