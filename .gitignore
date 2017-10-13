@@ -2,3 +2,9 @@
 *.py
 *.zip
 *.rar
+
+*.ipynb
+
+*.xml
+
+*.iml
