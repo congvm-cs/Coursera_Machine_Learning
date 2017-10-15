@@ -68,20 +68,8 @@ Theta2_grad = zeros(size(Theta2));
 %               num_labels, ...
 %               X, y, lambda)
 
-%% preprocessing
 % add bias to X
 X = [ones(size(X, 1), 1), X];
-% computing the activations (z (2) , a (2) , z (3) , a (3) )
-   z2 = X*Theta1';
-   a2 = sigmoid(z2);
-   disp(size(a2));
-   a2 = [ones(size(a2, 1), 1), a2];
-   z3 = a2*Theta2';
-   a3 = sigmoid(z3);
-   disp(size(a3));
-disp('---------------------------------');
-pause;
-
 
 %% layer 1
 h_layer1 = X*Theta1';   % 5000 x 25
@@ -105,19 +93,34 @@ end
 J = (1.0/m) * sum(sum(-(yVec) .* log(a_layer2) - (1 - yVec) .* log(1 - a_layer2)));
 
 %% Part2
-for i = 1:m
-   % computing the activations (z (2) , a (2) , z (3) , a (3) )
-   z2 = X*Theta1';
-   a2 = sigmoid(z2);
-   disp(size(a2));
-   a2 = [ones(size(a2, 1), 1), a2];
-   z3 = a2*Theta2';
-   a3 = sigmoid(z3);
-   
-   error3 = yVec - a3;
-   error2 = error3*Theta2.*z2'*(1- z2);
-   
+
+for t = 1:m
+	% For the input layer, where l=1:
+	a1 = X(t, :)';     % for every sample in X
+    
+	% For the hidden layers, where l=2:
+	z2 = Theta1 * a1;
+	a2 = [1; sigmoid(z2)];
+    
+	z3 = Theta2 * a2;
+	a3 = sigmoid(z3);
+
+	yy = ((1:num_labels)==y(t))';
+    
+	% For the delta values:
+	delta_3 = a3 - yy;
+	delta_2 = (Theta2' * delta_3) .* [1; sigmoidGradient(z2)];
+	delta_2 = delta_2(2:end); % Taking of the bias row
+
+	% delta_1 is not calculated because we do not associate error with the input    
+
+	% Big delta update
+	Theta1_grad = Theta1_grad + delta_2 * a1';
+	Theta2_grad = Theta2_grad + delta_3 * a2';
 end
+
+Theta1_grad = (1/m) * Theta1_grad + (lambda/m) * [zeros(size(Theta1, 1), 1) Theta1(:,2:end)];
+Theta2_grad = (1/m) * Theta2_grad + (lambda/m) * [zeros(size(Theta2, 1), 1) Theta2(:,2:end)];
 
 %% Part3
 Theta1(:, 1) = 0;   % remove bias
@@ -129,6 +132,5 @@ J = J + regularized_term;
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
-
 
 end
